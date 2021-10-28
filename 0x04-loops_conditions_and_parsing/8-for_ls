@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Bash script that prints file names in current directory, but
+# only the part of the name after the first dash is displayed 
+
+for file in *
+do
+  echo "$file" | cut -d '-' -f2-
+done

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This script is displaying "Best School" 10 times
+# Until loop iterates as long as the condition evaluates to false.
+
+i=0
+
+until [ $i -gt 9 ]
+do
+  echo "Best School"
+  ((i++))
+done

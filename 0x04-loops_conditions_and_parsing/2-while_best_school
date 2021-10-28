@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This script is displaying "Best School" 10 times
+# While loop iterates as long as the condition evaluates to true.
+
+i=0
+
+while [ $i -lt 10 ]
+do
+  echo "Best School"
+  ((i++))
+done

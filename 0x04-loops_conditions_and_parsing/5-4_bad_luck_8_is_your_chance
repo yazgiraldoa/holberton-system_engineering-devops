@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# This script is iterating 10th times displaying "Best School", 
+# but in the 4th iteration displays "bad luck"
+# and the 8th iteration displays "good luck"
+
+i=1
+
+while [ $i -le 10 ]
+do
+  if [ $i -eq 4 ]
+  then
+    echo "bad luck"
+  elif [ $i -eq 8 ]
+  then
+    echo "good luck"
+  else
+    echo "Best School"
+  fi
+  ((i++))
+done
