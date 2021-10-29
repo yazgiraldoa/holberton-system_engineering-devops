@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Bash script to kill a process
+# shellcheck disable=SC2009
+
+ps ax | grep 4-to_infinity_and_beyond | grep -v grep | awk '{print $1}' | xargs kill -15
