@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Bash script that reads and prints the content of a file 
+
+while IFS=':' read -r username passwd uid gid user_info home_dir command
+do
+    echo "The user $username is part of the $gid gang, lives in $home_dir and rides $command. $uid's place is protected by the passcode $passwd, more info about the user here: $user_info"
+done < "/etc/passwd"
