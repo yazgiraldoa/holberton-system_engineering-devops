@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Setting a 404 not found page
+sudo apt-get -y update
+sudo apt-get -y install nginx
+echo -e "Hello World" > /var/www/html/index.html
+sed -i '43i location /redirect_me{\nrewrite ^/(.*)$ https://www.youtube.com/watch?v=EgBJmlPo8Xw permanent;\n}\n' /etc/nginx/sites-available/default 
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/error404.html
+sed -i '46i error_page 404 /error404.html;\n' /etc/nginx/sites-available/default
+service nginx start
