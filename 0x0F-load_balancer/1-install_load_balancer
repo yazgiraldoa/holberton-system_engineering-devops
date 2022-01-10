@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Set a load balancer with round robin algorithm
+sudo apt-get -y update
+sudo apt-get -y install haproxy=1.6.\*
+sudo chmod 777 /etc/haproxy
+sudo chmod 777 /etc/haproxy/haproxy.cfg
+echo -e '#backend\nbackend web_back\nbalance roundrobin\nserver 3437-web-01 34.138.220.245:80 check\nserver 3437-web-02 34.235.143.24:80 check\n' | sudo tee --append /etc/haproxy/haproxy.cfg > /dev/null
+echo -e '#frontend\nfrontend web_front\nbind *:80\nmode http\ndefault_backend web_back\n' | sudo tee --append /etc/haproxy/haproxy.cfg > /dev/null
+sudo service haproxy restart
