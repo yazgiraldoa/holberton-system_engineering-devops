@@ -37,6 +37,7 @@ defaults
 #backend
 backend web_back
 balance roundrobin
+redirect scheme https code 301 if !{ ssl_fc }
 server 3437-web-01 34.138.220.245:80 check
 server 3437-web-02 34.235.143.24:80 check
 
@@ -44,21 +45,18 @@ server 3437-web-02 34.235.143.24:80 check
 frontend web_front
 bind *:80
 mode http
-redirect scheme www-https code 301
+http-request add-header X-Forwarded-Proto http
 default_backend web_back
 
 #frontend https
 frontend www-https
 bind *:443 ssl crt /etc/haproxy/certs/www.yazmingiraldo.tech.pem alpn h2,http/1.1
-# set X-SSL in case of ssl_fc <- explained below
 http-request add-header X-Forwarded-Proto https if { ssl_fc }
 http-request set-header X-SSL %[ssl_fc]
-# Select a Challenge
 acl letsencrypt-acl path_beg /.well-known/acme-challenge/
-# Use the challenge backend if the challenge is set
 use_backend letsencrypt-backend if letsencrypt-acl
 default_backend web_back
 
+#backend letsencrypt
 backend letsencrypt-backend
-# Lets encrypt backend server
 server letsencrypt 127.0.0.1:54321
