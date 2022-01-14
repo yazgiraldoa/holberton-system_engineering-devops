@@ -15,6 +15,7 @@ global
         # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
         ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
         ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+        ssl-dh-param-file /etc/haproxy/dhparams.pem
         ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
 
 defaults
@@ -36,22 +37,28 @@ defaults
 #backend
 backend web_back
 balance roundrobin
-redirect scheme https if !{ ssl_fc }
 server 3437-web-01 34.138.220.245:80 check
 server 3437-web-02 34.235.143.24:80 check
 
-#frontend
+#frontend http
 frontend web_front
 bind *:80
 mode http
+redirect scheme www-https code 301
 default_backend web_back
 
+#frontend https
 frontend www-https
-bind *:443 ssl crt /etc/letsencrypt/live/www.yazmingiraldo.tech/privkey.pem
-reqadd X-Forwarded-Proto:\ https
+bind *:443 ssl crt /etc/haproxy/certs/www.yazmingiraldo.tech.pem alpn h2,http/1.1
+# set X-SSL in case of ssl_fc <- explained below
+http-request add-header X-Forwarded-Proto https if { ssl_fc }
+http-request set-header X-SSL %[ssl_fc]
+# Select a Challenge
 acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+# Use the challenge backend if the challenge is set
 use_backend letsencrypt-backend if letsencrypt-acl
 default_backend web_back
 
 backend letsencrypt-backend
+# Lets encrypt backend server
 server letsencrypt 127.0.0.1:54321
